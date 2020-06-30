@@ -1,0 +1,163 @@
+{
+  "type": "object",
+  "title": "Configuration",
+  "required": [
+    "#api_secret",
+    "client_id",
+    "campaigns",
+    "segments",
+    "activities",
+    "users",
+    "metrics"
+  ],
+  "properties": {
+    "#api_secret": {
+      "type": "string",
+      "title": "API client secret",
+      "format": "password",
+      "propertyOrder": 1
+    },
+    "api_client_id": {
+      "type": "string",
+      "title": "API client ID",
+      "propertyOrder": 2
+    },
+    "campaigns": {
+      "type": "boolean",
+      "title": "Download Campaigns",
+      "default": false,
+      "format": "checkbox",
+      "propertyOrder": 30
+    },
+    "segments": {
+      "type": "boolean",
+      "title": "Download Segments",
+      "default": false,
+      "format": "checkbox",
+      "propertyOrder": 40
+    },
+    "activities": {
+      "type": "array",
+      "title": "Activities",
+      "description": "Download activities.",
+      "propertyOrder": 4000,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "title": "Setup",
+        "required": [
+          "types",
+          "mode",
+          "delete"
+        ],
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode of result parsing.",
+            "description": "PARSED_DATA will generate structured table for each activity type. SINGLE_TABLE will populate single activities_all table with data unparsed as column.",
+            "enum": [
+              "PARSED_DATA",
+              "SINGLE_TABLE"
+            ],
+            "propertyOrder": 1
+          },
+          "types": {
+            "type": "array",
+            "title": "Types",
+            "description": "Activity types",
+            "items": {
+              "enum": [
+                "page",
+                "event",
+                "attribute_change",
+                "failed_attribute_change",
+                "stripe_event",
+                "drafted_email",
+                "failed_email",
+                "dropped_email",
+                "sent_email",
+                "spammed_email",
+                "bounced_email",
+                "delivered_email",
+                "triggered_email",
+                "opened_email",
+                "clicked_email",
+                "converted_email",
+                "unsubscribed_email",
+                "attempted_email",
+                "undeliverable_email",
+                "device_change",
+                "attempted_action",
+                "drafted_action",
+                "sent_action",
+                "delivered_action",
+                "bounced_action",
+                "failed_action",
+                "converted_action",
+                "undeliverable_action",
+                "opened_action",
+                "secondary:dropped_email",
+                "secondary:spammed_email",
+                "secondary:bounced_email",
+                "secondary:delivered_email",
+                "secondary:opened_email",
+                "secondary:clicked_email",
+                "secondary:failed_email"
+              ],
+              "type": "string"
+            },
+            "format": "select",
+            "uniqueItems": true,
+            "propertyOrder": 360
+          },
+          "delete": {
+            "type": "boolean",
+            "title": "Include deleted records",
+            "default": false,
+            "format": "checkbox"
+          }
+        }
+      }
+    },
+    "users": {
+      "type": "array",
+      "title": "Users",
+      "description": "Download Users.",
+      "propertyOrder": 4000,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "title": "Setup",
+        "required": [
+          "filters"
+        ],
+        "properties": {
+          "filters": {
+            "type": "string",
+            "title": "Filter",
+            "description": "Optional JSON encoded json filter, as defined in https://customer.io/docs/api-triggered-data-format#general-syntax. If left empty, all users are donwnloaded",
+            "format": "textarea",
+            "propertyOrder": 1
+          }
+        }
+      }
+    },
+    "incremental_output": {
+      "type": "number",
+      "enum": [
+        0,
+        1
+      ],
+      "options": {
+        "enum_titles": [
+          "Full Load",
+          "Incremental Update"
+        ]
+      },
+      "default": 1,
+      "title": "Load type",
+      "description": "If set to Incremental update, the result tables will be updated based on primary key consisting of all selected dimensions. Full load overwrites the destination table each time, with no primary keys.",
+      "propertyOrder": 4
+    }
+  }
+}
