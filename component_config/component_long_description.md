@@ -1,2 +1,1 @@
-The display advertising tools allow you to identify, track and engage with your audience across a wide range of channels. 
-Retrieve Buy-Side report data from the Reporting Stats API. Reporting Stats API returns report data consisting of statistics derived from the data collected by the Adform tracking code.
+Customer.io
