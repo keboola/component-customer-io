@@ -61,12 +61,12 @@ class Component(KBCEnvHandler):
         try:
             self.validate_config()
             if self.cfg_params.get(KEY_ACTIVITIES):
-                self.validate_parameters(self.cfg_params[KEY_ACTIVITIES],
+                self.validate_parameters(self.cfg_params[KEY_ACTIVITIES][0],
                                          [KEY_ACT_TYPES, KEY_ACT_MODE], KEY_ACTIVITIES)
 
                 # validate types
                 err = []
-                for t in self.cfg_params[KEY_ACTIVITIES][KEY_ACT_TYPES]:
+                for t in self.cfg_params[KEY_ACTIVITIES][0][KEY_ACT_TYPES]:
                     if t not in api_service.SUPPORTED_ACTIVITY_TYPES:
                         err.append(t)
                 if err:
@@ -93,7 +93,7 @@ class Component(KBCEnvHandler):
 
         if params.get(KEY_ACTIVITIES):
             logging.info('Downloading activites.')
-            self.download_activities(params[KEY_ACTIVITIES])
+            self.download_activities(params[KEY_ACTIVITIES][0])
 
         if params.get(KEY_CAMPAIGNS):
             logging.info('Downloading campaigns.')
