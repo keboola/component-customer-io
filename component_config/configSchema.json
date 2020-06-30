@@ -3,12 +3,11 @@
   "title": "Configuration",
   "required": [
     "#api_secret",
-    "client_id",
+    "site_id",
     "campaigns",
     "segments",
     "activities",
-    "users",
-    "metrics"
+    "users"
   ],
   "properties": {
     "#api_secret": {
@@ -17,7 +16,7 @@
       "format": "password",
       "propertyOrder": 1
     },
-    "api_client_id": {
+    "site_id": {
       "type": "string",
       "title": "API client ID",
       "propertyOrder": 2
