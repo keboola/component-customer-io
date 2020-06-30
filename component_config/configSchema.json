@@ -7,7 +7,7 @@
     "campaigns",
     "segments",
     "activities",
-    "users"
+    "customers"
   ],
   "properties": {
     "#api_secret": {
@@ -118,10 +118,10 @@
         }
       }
     },
-    "users": {
+    "customers": {
       "type": "array",
-      "title": "Users",
-      "description": "Download Users.",
+      "title": "Customers",
+      "description": "Download Customers.",
       "propertyOrder": 4000,
       "maxItems": 1,
       "items": {
