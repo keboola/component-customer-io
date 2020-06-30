@@ -116,20 +116,6 @@ class CustomerIoClient(HttpClientBase):
 
         return response.json()['export']
 
-    def wait_until_export_finished(self, export_id):
-        continue_polling = True
-        res = {}
-        while continue_polling:
-            time.sleep(DEFAULT_WAIT_INTERVAL)
-            res = self.get_export()
-            if res['status'] in ['succeeded', 'failed']:
-                continue_polling = False
-
-        if res['status'] == 'failed':
-            raise CustomerIoClientError(f'Report job ID "{operation_id} failed to process, please try again later."')
-
-        return res
-
     def get_export_result(self, export_id, result_path):
 
         res_url = self.get_wait_for_export_result_url(export_id)
