@@ -80,6 +80,12 @@ class Component(KBCEnvHandler):
         self.client = CustomerIoClient(self.cfg_params[KEY_SITE_ID], self.cfg_params[KEY_API_SECRET])
         self.writers = {}
 
+        # headers from state
+        state = self.get_state_file()
+        self.activity_headers = {}
+        if state:
+            self.activity_headers = state.get("activity_headers", {})
+
     def run(self):
         '''
         Main execution code
@@ -103,6 +109,7 @@ class Component(KBCEnvHandler):
             logging.info('Downloading segments..')
             self.download_segments()
 
+        self.write_state_file({"activity_headers": self.activity_headers})
         logging.info('Extraction finished successfully!')
 
     def download_customers(self, param):
@@ -136,14 +143,17 @@ class Component(KBCEnvHandler):
         self.create_manifests(results, incremental=self.cfg_params[KEY_INCREMENTAL])
 
     def _collect_activities_for_type(self, activity_type, fetch_deleted, parse_mode):
-        wr = self._get_activity_writer(activity_type, parse_mode)
+        wr = None
         for res in self.client.get_activities(activity_type, fetch_deleted):
+            if not res:
+                continue
+            wr = self._get_activity_writer(activity_type, parse_mode, res)
             wr.write_all(res)
-        if parse_mode != 'SINGLE_TABLE':
+        if wr and parse_mode != 'SINGLE_TABLE':
             wr.close()
         return wr.collect_results()
 
-    def _get_activity_writer(self, activity_type, mode) -> ResultWriter:
+    def _get_activity_writer(self, activity_type, mode, response) -> ResultWriter:
         if mode == 'SINGLE_TABLE':
             activity_type = 'SINGLE_TABLE'
             if not self.writers.get('SINGLE_TABLE'):
@@ -154,8 +164,10 @@ class Component(KBCEnvHandler):
 
         elif mode == 'PARSED_DATA':
             if not self.writers.get(activity_type):
-                table_def = KBCTableDef(['id'], [], 'activity_' + activity_type, '')
-                wr = ResultWriter(self.tables_out_path, table_def, fix_headers=False)
+                header = self._get_activity_table_header(activity_type, response)
+                table_def = KBCTableDef(['id'], header, 'activity_' + activity_type, '')
+
+                wr = ResultWriter(self.tables_out_path, table_def, fix_headers=True)
                 self.writers[activity_type] = wr
         else:
             raise ValueError(f'Unsupported activity parser mode {mode}')
@@ -175,6 +187,15 @@ class Component(KBCEnvHandler):
         with ResultWriter(self.tables_out_path, table_def, fix_headers=False) as wr:
             wr.write_all(campaigns_data, object_from_arrays=False)
             self.create_manifests(wr.collect_results(), incremental=self.cfg_params[KEY_INCREMENTAL])
+
+    def _get_activity_table_header(self, activity_type, response):
+        wr = ResultWriter(self.tables_out_path, KBCTableDef(['id'], [], 'activity_' + activity_type, ''),
+                          fix_headers=True)
+        last_header = self.activity_headers.get(activity_type, [])
+        curr_header = set(wr.flatten_json(response[0]).keys())
+        curr_header.update(last_header)
+        self.activity_headers[activity_type] = list(curr_header)
+        return list(curr_header)
 
 
 """

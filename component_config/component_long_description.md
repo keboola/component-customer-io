@@ -1,1 +1,1 @@
-Customer.io
+Fetch customers, campaigns, segments and activites from your Customer.io account.

@@ -6,4 +6,4 @@ __pycache__/
 .pydevproject
 
 # kbc datafolder
-data/
+/data
