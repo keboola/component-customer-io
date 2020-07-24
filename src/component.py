@@ -151,7 +151,7 @@ class Component(KBCEnvHandler):
             wr.write_all(res)
         if wr and parse_mode != 'SINGLE_TABLE':
             wr.close()
-        return wr.collect_results()
+        return wr.collect_results() if wr else []
 
     def _get_activity_writer(self, activity_type, mode, response) -> ResultWriter:
         if mode == 'SINGLE_TABLE':
