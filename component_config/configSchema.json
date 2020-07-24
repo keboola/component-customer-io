@@ -12,13 +12,13 @@
   "properties": {
     "#api_secret": {
       "type": "string",
-      "title": "API client secret",
+      "title": "API key",
       "format": "password",
       "propertyOrder": 1
     },
     "site_id": {
       "type": "string",
-      "title": "API client ID",
+      "title": "Site ID",
       "propertyOrder": 2
     },
     "campaigns": {

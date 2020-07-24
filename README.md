@@ -1,12 +1,6 @@
-# Adform Reports extractor
+# Customer.io Extractor
 
-Retrieve Buy-Side report data from the Reporting Stats API.
-
-Reporting Stats API returns report data consisting of statistics derived from the data collected by the Adform tracking code. 
-Each report is organized as dimensions and metrics. Metrics are the individual measurements of user activity on your property, 
-such as impressions, clicks and conversions. Dimensions break down metrics across some common criteria, 
-such as campaign or line item. When you build a query, you specify which dimensions 
-and metrics you want in your report data.
+Fetch customers, campaigns, segments and activites from your Customer.io account.
 
 
 **Table of contents:**  
@@ -17,11 +11,7 @@ and metrics you want in your report data.
 
 ## Authorization
 
-- **API client secret**, **API client ID** - Adform client credentials for registered app with `Credentials flow` enabled.
-
-## Result table name
-
-Name of the Storage table where the result report data will be stored. The default is `report-data`.
+- **API key**, **Site ID** - Provide your Customer.io credentials.
 
 ## Load type
 
@@ -31,7 +21,11 @@ If set to Incremental update, the result tables will be updated based on primary
 If the dimension list is changed in an existing configuration, the existing result table might need to be dropped or the primary key changed before the load, since it structure 
 will be different. If set to full load, **no primary key** is set.
 
-## Filter
+## Download Campaigns
+
+Downloads campaigns dataset. Note that columns `actions` and `tags` contain JSON and Array object in textual form.
+
+## Download Segments
 
 ### Date
 
