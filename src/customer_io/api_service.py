@@ -48,7 +48,7 @@ class CustomerIoClient(HttpClientBase):
                                 auth=(site_id, secret_key))
 
     def _get_paged_result_pages(self, endpoint, parameters, res_obj_name, has_more_attr='next', offset=None,
-                                limit=DEFAULT_PAGING_LIMIT):
+                                limit=DEFAULT_PAGING_LIMIT, return_par=None):
         """
         Generic pagination getter method returning Iterable instance that can be used in for loops.
 
@@ -78,9 +78,14 @@ class CustomerIoClient(HttpClientBase):
                 has_more = True
             else:
                 has_more = False
+
+            return_value = None
+            if return_par:
+                return_value = offset
+
             offset = req_response[has_more_attr]
 
-            yield req_response[res_obj_name]
+            yield req_response[res_obj_name], return_value
 
     def submit_export(self, filters, type, **additional_params):
         """
@@ -159,6 +164,21 @@ class CustomerIoClient(HttpClientBase):
         parameters = {"type": type, "deleted": deleted}
         parameters = {**parameters, **additional_params}
         return self._get_paged_result_pages('activities', parameters, 'activities')
+
+    def get_messages(self, metric=None, _type=None, last_token=None):
+        """
+
+        :param _type: Filter the messages metadata based on a message type. Allowable values are "email", "webhook",
+        "twilio", "urban_airship", "slack", "push".
+        :param metric: Allowable values are 'created', 'attempted', 'sent', 'delivered', 'opened', 'clicked',
+         'converted', 'bounced', 'spammed', 'unsubscribed', 'dropped', 'failed', 'undeliverable'.
+
+        :return:
+        """
+
+        parameters = {"metric": metric, "type": _type, "drafts": False}
+        return self._get_paged_result_pages('messages', parameters, 'messages', return_par='next',
+                                            offset=last_token)
 
     def get_campaigns(self):
         url = self.base_url + 'campaigns'

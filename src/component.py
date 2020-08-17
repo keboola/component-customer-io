@@ -32,6 +32,7 @@ KEY_CUSTOMERS = 'customers'
 KEY_FILTERS = 'filters'
 
 KEY_ACTIVITIES = 'activities'
+KEY_MESSAGES = 'messages'
 KEY_ACT_TYPES = 'types'
 KEY_ACT_MODE = 'mode'
 KEY_ACT_DELETED = 'deleted'
@@ -81,17 +82,17 @@ class Component(KBCEnvHandler):
         self.writers = {}
 
         # headers from state
-        state = self.get_state_file()
+        self.state = self.get_state_file()
         self.activity_headers = {}
-        if state:
-            self.activity_headers = state.get("activity_headers", {})
+        if self.state:
+            self.activity_headers = self.state.get("activity_headers", {})
+            self.message_headers = self.state.get("message_headers", [])
 
     def run(self):
         '''
         Main execution code
         '''
         params = self.cfg_params  # noqa
-
         if params.get(KEY_CUSTOMERS):
             logging.info('Downloading customers export.')
             self.download_customers(params[KEY_CUSTOMERS][0])
@@ -101,6 +102,11 @@ class Component(KBCEnvHandler):
             logging.info('Downloading activites.')
             self.download_activities(params[KEY_ACTIVITIES][0])
 
+        last_token = None
+        if params.get(KEY_MESSAGES):
+            logging.info('Downloading messages.')
+            last_token = self.download_messages(params[KEY_MESSAGES][0])
+
         if params.get(KEY_CAMPAIGNS):
             logging.info('Downloading campaigns.')
             self.download_campaigns()
@@ -109,7 +115,9 @@ class Component(KBCEnvHandler):
             logging.info('Downloading segments..')
             self.download_segments()
 
-        self.write_state_file({"activity_headers": self.activity_headers})
+        self.write_state_file({"activity_headers": self.activity_headers, "message_headers": self.message_headers,
+                               "message_last_token": last_token})
+
         logging.info('Extraction finished successfully!')
 
     def download_customers(self, param):
@@ -142,6 +150,20 @@ class Component(KBCEnvHandler):
         logging.info('Writing activity manifests..')
         self.create_manifests(results, incremental=self.cfg_params[KEY_INCREMENTAL])
 
+    def download_messages(self, params):
+        types = params[KEY_ACT_TYPES]
+        results = []
+        last_tokens = {}
+        for t in types:
+            logging.info(f'Getting results for message type: {t}')
+            res, return_par = self._collect_messages_for_type(t, incremental=params.get(KEY_INCREMENTAL))
+            last_tokens[t] = return_par
+            results.extend(res)
+
+        logging.info('Writing message manifests..')
+        self.create_manifests(results, incremental=self.cfg_params[KEY_INCREMENTAL])
+        return last_tokens
+
     def _collect_activities_for_type(self, activity_type, fetch_deleted, parse_mode):
         wr = None
         for res in self.client.get_activities(activity_type, fetch_deleted):
@@ -152,6 +174,25 @@ class Component(KBCEnvHandler):
         if wr and parse_mode != 'SINGLE_TABLE':
             wr.close()
         return wr.collect_results() if wr else []
+
+    def _collect_messages_for_type(self, message_type, incremental=False):
+        wr = None
+        last_token = None
+        if incremental:
+            last_token = self.state.get('message_last_token', {}).get(message_type)
+        results = []
+        for res, return_par in self.client.get_messages(_type=message_type, last_token=last_token):
+            if not res:
+                continue
+            if return_par:
+                last_token = return_par
+
+            wr = self._get_message_writer(res)
+            wr.write_all(res)
+        if wr:
+            wr.close()
+            results = wr.collect_results()
+        return results, last_token
 
     def _get_activity_writer(self, activity_type, mode, response) -> ResultWriter:
         if mode == 'SINGLE_TABLE':
@@ -174,6 +215,15 @@ class Component(KBCEnvHandler):
 
         return self.writers[activity_type]
 
+    def _get_message_writer(self, response):
+        if not self.writers.get('messages_writer'):
+            header = self._get_message_table_header(response)
+            table_def = KBCTableDef(['deduplicate_id'], header, 'messages', '')
+
+            wr = ResultWriter(self.tables_out_path, table_def, fix_headers=True)
+            self.writers['messages_writer'] = wr
+        return self.writers['messages_writer']
+
     def download_campaigns(self):
         campaigns_data = self.client.get_campaigns()
         table_def = KBCTableDef(['id'], CAMPAIGNS_COLS, 'campaigns', '')
@@ -195,6 +245,15 @@ class Component(KBCEnvHandler):
         curr_header = set(wr.flatten_json(response[0]).keys())
         curr_header.update(last_header)
         self.activity_headers[activity_type] = list(curr_header)
+        return list(curr_header)
+
+    def _get_message_table_header(self, response):
+        wr = ResultWriter(self.tables_out_path, KBCTableDef(['id'], [], 'messages', ''),
+                          fix_headers=True)
+        last_header = self.message_headers
+        curr_header = set(wr.flatten_json(response[0]).keys())
+        curr_header.update(last_header)
+        self.message_headers = list(curr_header)
         return list(curr_header)
 
 

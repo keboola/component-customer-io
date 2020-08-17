@@ -7,6 +7,7 @@
     "campaigns",
     "segments",
     "activities",
+    "messages",
     "customers"
   ],
   "properties": {
@@ -112,6 +113,48 @@
           "delete": {
             "type": "boolean",
             "title": "Include deleted records",
+            "default": false,
+            "format": "checkbox"
+          }
+        }
+      }
+    },
+    "messages": {
+      "type": "array",
+      "title": "Messages",
+      "description": "Download messages.",
+      "propertyOrder": 4000,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "title": "Setup",
+        "required": [
+          "types",
+          "incremental_output"
+        ],
+        "properties": {
+          "types": {
+            "type": "array",
+            "title": "Types",
+            "description": "Message types",
+            "items": {
+              "enum": [
+                "email",
+                "webhook",
+                "twilio",
+                "urban_airship",
+                "slack",
+                "push"
+              ],
+              "type": "string"
+            },
+            "format": "select",
+            "uniqueItems": true,
+            "propertyOrder": 360
+          },
+          "incremental_output": {
+            "type": "boolean",
+            "title": "Continue since last run",
             "default": false,
             "format": "checkbox"
           }
