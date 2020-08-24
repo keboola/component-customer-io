@@ -84,8 +84,10 @@ class CustomerIoClient(HttpClientBase):
                 return_value = offset
 
             offset = req_response[has_more_attr]
-
-            yield req_response[res_obj_name], return_value
+            if return_par:
+                yield req_response[res_obj_name], return_value
+            else:
+                yield req_response[res_obj_name]
 
     def submit_export(self, filters, type, **additional_params):
         """
