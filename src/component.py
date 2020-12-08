@@ -7,6 +7,7 @@ import ast
 import logging
 import os
 import sys
+from pathlib import Path
 
 from kbc.env_handler import KBCEnvHandler
 from kbc.result import KBCTableDef, ResultWriter
@@ -15,6 +16,7 @@ from customer_io import api_service
 from customer_io.api_service import CustomerIoClient
 
 # configuration variables
+KEY_ATTRIBUTES = 'attributes'
 CAMPAIGNS_COLS = ["id", "deduplicate_id", "name",
                   "type", "created", "updated", "active", "state", "actions", "first_started",
                   "created_by", "tags", "frequency", "date_attribute", "timezone",
@@ -46,7 +48,10 @@ MANDATORY_IMAGE_PARS = []
 class Component(KBCEnvHandler):
 
     def __init__(self, debug=False):
-        KBCEnvHandler.__init__(self, MANDATORY_PARS, )
+        # for easier local project setup
+        default_data_dir = Path(__file__).resolve().parent.parent.joinpath('data').as_posix() \
+            if not os.environ.get('KBC_DATADIR') else None
+        KBCEnvHandler.__init__(self, MANDATORY_PARS, data_path=default_data_dir)
         # override debug from config
         if self.cfg_params.get(KEY_DEBUG):
             debug = True
@@ -122,10 +127,13 @@ class Component(KBCEnvHandler):
 
     def download_customers(self, param):
         filters = None
+        attributes = None
         if param.get(KEY_FILTERS):
             filters = ast.literal_eval(param.get(KEY_FILTERS))
+        if param.get(KEY_ATTRIBUTES):
+            attributes = self._parse_comma_separated_values(param[KEY_ATTRIBUTES])
 
-        exp = self.client.submit_export(filters, 'customers')
+        exp = self.client.submit_export(filters, 'customers', attributes=attributes)
         logging.info(f"Export {exp['description']} submitted.")
         logging.info("Downloading result...")
 
@@ -255,6 +263,12 @@ class Component(KBCEnvHandler):
         curr_header.update(last_header)
         self.message_headers = list(curr_header)
         return list(curr_header)
+
+    def _parse_comma_separated_values(self, param):
+        cols = []
+        if param:
+            cols = [p.strip() for p in param.split(",")]
+        return cols
 
 
 """
