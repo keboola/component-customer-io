@@ -171,7 +171,8 @@
         "type": "object",
         "title": "Setup",
         "required": [
-          "filters"
+          "filters",
+          "attributes"
         ],
         "properties": {
           "filters": {
@@ -180,7 +181,17 @@
             "description": "Optional JSON encoded json filter, as defined in https://customer.io/docs/api-triggered-data-format#general-syntax. If left empty, all users are donwnloaded",
             "format": "textarea",
             "propertyOrder": 1
-          }
+          },
+          "attributes": {
+      "type": "string",
+      "title": "Attributes",
+      "format": "textarea","options": {
+        "input_height": "100px"
+      },
+      "description": "Comma separated list of required customer attributes. Each customer may have different set of columns, this is to limit only to attributes you need. All attributes are downloaded if left empty.",
+      "uniqueItems": true,
+      "propertyOrder": 700
+    }
         }
       }
     },
