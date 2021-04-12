@@ -89,9 +89,11 @@ class Component(KBCEnvHandler):
         # headers from state
         self.state = self.get_state_file()
         self.activity_headers = {}
-        if self.state:
-            self.activity_headers = self.state.get("activity_headers", {})
-            self.message_headers = self.state.get("message_headers", [])
+        if not self.state:
+            self.state = {}
+
+        self.activity_headers = self.state.get("activity_headers", {})
+        self.message_headers = self.state.get("message_headers", [])
 
     def run(self):
         '''
