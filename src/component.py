@@ -41,7 +41,7 @@ KEY_ACT_DELETED = 'deleted'
 
 # #### Keep for debug
 KEY_DEBUG = 'debug'
-MANDATORY_PARS = [KEY_API_SECRET, KEY_SITE_ID]
+MANDATORY_PARS = [KEY_API_SECRET]
 MANDATORY_IMAGE_PARS = []
 
 
@@ -83,7 +83,7 @@ class Component(KBCEnvHandler):
             exit(1)
 
         # intialize instance parameteres
-        self.client = CustomerIoClient(self.cfg_params[KEY_SITE_ID], self.cfg_params[KEY_API_SECRET])
+        self.client = CustomerIoClient(self.cfg_params[KEY_API_SECRET])
         self.writers = {}
 
         # headers from state

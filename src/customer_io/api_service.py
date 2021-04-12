@@ -42,10 +42,10 @@ class CustomerIoClient(HttpClientBase):
 
     """
 
-    def __init__(self, site_id, secret_key):
+    def __init__(self, secret_key):
         HttpClientBase.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
                                 status_forcelist=(429, 500, 502, 504),
-                                auth=(site_id, secret_key))
+                                auth_header={"Authorization": f"Bearer {secret_key}"})
 
     def _get_paged_result_pages(self, endpoint, parameters, res_obj_name, has_more_attr='next', offset=None,
                                 limit=DEFAULT_PAGING_LIMIT, return_par=None):
