@@ -11,7 +11,10 @@ Fetch customers, campaigns, segments and activites from your Customer.io account
 
 ## Authorization
 
-- **API key**, **Site ID** - Provide your Customer.io credentials.
+- **API key** - You can generate a bearer token, known as an App API Key, with a defined scope in [your account settings](https://fly.customer.io/settings/api_credentials?keyType=app)
+. [Learn more about bearer authorization in Customer.io.](https://customer.io/docs/managing-credentials)
+
+
 
 ## Load type
 
@@ -21,33 +24,41 @@ If set to Incremental update, the result tables will be updated based on primary
 If the dimension list is changed in an existing configuration, the existing result table might need to be dropped or the primary key changed before the load, since it structure 
 will be different. If set to full load, **no primary key** is set.
 
-## Download Campaigns
+## Campaigns
 
 Downloads campaigns dataset. Note that columns `actions` and `tags` contain JSON and Array object in textual form.
 
-## Download Segments
+## Segments
 
-### Date
+Downloads segments
 
-Report date range boundaries. The maximum date range accessible through API is 397 days (13 months) from today.
+## Messages
 
-### Client IDS
+List metadata about messages. You may choose which types of messages you wish.  
+Allowable values are `email`, `webhook`, `twilio`, `urban_airship`, `slack`, `push`.
 
-Optional list of client IDs to retrieve. If left empty, data for all available clients will be retrieved.
+[More info here](https://customer.io/docs/api/#apibeta-apimessagesmessages_list) 
 
-## Dimensions
+### Incremental loading
 
-List of report dimensions. For full list of dimensions and its' description [refer here](docs/available_dimensions.md)
+When `Continue since last run` is checked, only the new messages that had appeared since last run are downloaded. 
+To backfill without changing this attribute, click the `Reset State` button.
 
-## Metrics
+## Customers
 
-List of report metrics. Max 10. Note that some combinations of metrics and/or dimensions are not supported.
+### Filter
 
-Each metric definition consists of a **metric name** and additional filtering possibilities (`Specs Metadata`) for individual metric. 
-If no value is specified in the `Specs Metadata` the default metric is used.
+An additional filter condition in JSON format. The filter language is defined [here](https://customer.io/docs/documentation/api-triggered-data-format.html#general-syntax)
 
-For a full list of available metrics and specs [see here](https://bitbucket.org/kds_consulting_team/kds-team.ex-adform-reports/raw/a5e14ac3450e4e1ab5b3cdb061493e2d5078108f/docs/available_metrics.md)
+**Example Values**: 
 
+- `Find the first 2 customers in segment 7 and segment 5` =>: `{"and":[{"segment":{"id":7}},{"segment":{"id":5}}]}`
+- `Find the first 10 unsubscribed customers` =>: `{"attribute":{"field":"unsubscribed","operator":"eq","value":"true"}}}`
+
+
+## Activities 
+ 
+ 
  
 ## Development
  

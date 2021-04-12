@@ -3,7 +3,6 @@
   "title": "Configuration",
   "required": [
     "#api_secret",
-    "site_id",
     "campaigns",
     "segments",
     "activities",
@@ -15,12 +14,8 @@
       "type": "string",
       "title": "API key",
       "format": "password",
-      "propertyOrder": 1
-    },
-    "site_id": {
-      "type": "string",
-      "title": "Site ID",
-      "propertyOrder": 2
+      "propertyOrder": 1,
+      "description": "Your bearer token."
     },
     "campaigns": {
       "type": "boolean",
