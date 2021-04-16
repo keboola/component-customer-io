@@ -65,7 +65,7 @@ class Component(KBCEnvHandler):
         logging.info('Loading configuration...')
 
         try:
-            self.validate_config()
+            self.validate_config(MANDATORY_PARS)
             if self.cfg_params.get(KEY_ACTIVITIES):
                 self.validate_parameters(self.cfg_params[KEY_ACTIVITIES][0],
                                          [KEY_ACT_TYPES, KEY_ACT_MODE], KEY_ACTIVITIES)
