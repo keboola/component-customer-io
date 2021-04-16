@@ -3,6 +3,7 @@
   "title": "Configuration",
   "required": [
     "#api_secret",
+    "incremental_output",
     "campaigns",
     "segments",
     "activities",
