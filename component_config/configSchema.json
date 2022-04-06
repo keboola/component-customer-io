@@ -22,7 +22,7 @@
     "api_region": {
       "type": "string",
       "title": "API Region",
-      "default": 'us',
+      "default": "us",
       "enum": [
         "us",
         "eu"
