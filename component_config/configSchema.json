@@ -3,6 +3,7 @@
   "title": "Configuration",
   "required": [
     "#api_secret",
+    "api_region",
     "incremental_output",
     "campaigns",
     "segments",
@@ -17,6 +18,16 @@
       "format": "password",
       "propertyOrder": 1,
       "description": "Your bearer token."
+    },
+    "api_region": {
+      "type": "string",
+      "title": "API Region",
+      "default": 'us',
+      "enum": [
+        "us",
+        "eu"
+      ],
+      "propertyOrder": 2
     },
     "campaigns": {
       "type": "boolean",
@@ -179,15 +190,16 @@
             "propertyOrder": 1
           },
           "attributes": {
-      "type": "string",
-      "title": "Attributes",
-      "format": "textarea","options": {
-        "input_height": "100px"
-      },
-      "description": "Comma separated list of required customer attributes. Each customer may have different set of columns, this is to limit only to attributes you need. All attributes are downloaded if left empty.",
-      "uniqueItems": true,
-      "propertyOrder": 700
-    }
+            "type": "string",
+            "title": "Attributes",
+            "format": "textarea",
+            "options": {
+              "input_height": "100px"
+            },
+            "description": "Comma separated list of required customer attributes. Each customer may have different set of columns, this is to limit only to attributes you need. All attributes are downloaded if left empty.",
+            "uniqueItems": true,
+            "propertyOrder": 700
+          }
         }
       }
     },

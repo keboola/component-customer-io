@@ -4,7 +4,7 @@ import time
 import requests
 from kbc.client_base import HttpClientBase
 
-BASE_URL = 'https://beta-api.customer.io/v1/api/'
+BASE_URL = 'https://api{suffix}.customer.io/v1/api/'
 
 MAX_RETRIES = 10
 
@@ -42,10 +42,22 @@ class CustomerIoClient(HttpClientBase):
 
     """
 
-    def __init__(self, secret_key):
-        HttpClientBase.__init__(self, base_url=BASE_URL, max_retries=MAX_RETRIES, backoff_factor=0.3,
+    def __init__(self, secret_key, region='us'):
+        base_url = self._build_base_url(region)
+        HttpClientBase.__init__(self, base_url=base_url, max_retries=MAX_RETRIES, backoff_factor=0.3,
                                 status_forcelist=(429, 500, 502, 504),
                                 auth_header={"Authorization": f"Bearer {secret_key}"})
+
+    def _build_base_url(self, region: str):
+
+        if region == 'us':
+            region_suffix = ''
+        elif region == 'eu':
+            region_suffix = '-eu'
+        else:
+            raise ValueError(f'Unsupported region: {region}')
+
+        return BASE_URL.format(suffix=region_suffix)
 
     def _get_paged_result_pages(self, endpoint, parameters, res_obj_name, has_more_attr='next', offset=None,
                                 limit=DEFAULT_PAGING_LIMIT, return_par=None):
