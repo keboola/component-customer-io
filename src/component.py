@@ -83,7 +83,7 @@ class Component(KBCEnvHandler):
             exit(1)
 
         # intialize instance parameteres
-        self.client = CustomerIoClient(self.cfg_params[KEY_API_SECRET])
+        self.client = CustomerIoClient(self.cfg_params[KEY_API_SECRET], self.cfg_params.get('api_region', 'us'))
         self.writers = {}
 
         # headers from state
