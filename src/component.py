@@ -92,7 +92,7 @@ class Component(KBCEnvHandler):
         if not self.state:
             self.state = {}
 
-        self.activity_headers = self.state.get("activity_headers", {})
+        self.activity_headers = self.state.get("activity_headers") or {}
         self.message_headers = self.state.get("message_headers", [])
 
     def run(self):
