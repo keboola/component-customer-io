@@ -1,0 +1,14 @@
+[project]
+name = "component-customer-io"
+dynamic = ["version"]
+requires-python = ">=3.13"
+dependencies = [
+    "deprecated>=1.2.18",
+    "freezegun>=1.5.5",
+    "mock>=5.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "flake8>=7.3.0",
+]
