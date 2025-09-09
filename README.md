@@ -26,7 +26,7 @@ will be different. If set to full load, **no primary key** is set.
 
 Some of the datasets allow `Continue since last run` option. When checked, only the new messages that had appeared since last run are downloaded. 
 
-To backfill without changing this attribute, click the `Reset State` button.
+To backfill without changing this attribute, click the `Clear state` button.
 
 ## Campaigns
 
