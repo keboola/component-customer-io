@@ -1,1 +1,1 @@
-With Customer.io, send targeted emails, push notifications, and SMS to lower churn, create stronger relationships, and drive subscriptions.
+Extracts customers, campaigns, segments, messages, and activities from Customer.io.
